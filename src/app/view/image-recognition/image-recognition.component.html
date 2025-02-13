@@ -1,0 +1,43 @@
+<div class="p-2 h-full">
+  <div class="select_video">
+    <p-dropdown styleClass="w-full" appendTo="body" [(ngModel)]="selecting_video" [options]="videos"
+                optionLabel="name" optionValue="code" placeholder="選擇影片"></p-dropdown>
+    <p-button label="確認" styleClass="bg-white" [outlined]="true" severity="secondary"></p-button>
+  </div>
+  <div class="grid mt-2 display">
+    <div class="col-12 md:col-8 lg:col-9 h-full">
+      <p-card class="video" styleClass="h-full">
+        <iframe src="https://www.youtube.com/embed/tk9guzivxiU?si=qQfhuRptSoA0b48B"
+                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                allowfullscreen></iframe>
+      </p-card>
+    </div>
+    <div class="col-12 md:col-4 lg:col-3 h-full">
+      <p-card styleClass="h-full" class="info-card">
+        <div class="h-half">
+          <span class="text-xl font-bold">A 選手</span>
+          <p-table [value]="A_player">
+            <ng-template pTemplate="body" let-player>
+              <tr>
+                <td class="p-link text-blue-400">{{ player.time }}</td>
+                <td class="flex justify-content-end">{{ player.name }}</td>
+              </tr>
+            </ng-template>
+          </p-table>
+        </div>
+        <div class="divider"></div>
+        <div class="h-half">
+          <span class="text-xl font-bold">B 選手</span>
+          <p-table [value]="B_player">
+            <ng-template pTemplate="body" let-player>
+              <tr>
+                <td class="p-link text-blue-400">{{ player.time }}</td>
+                <td class="flex justify-content-end">{{ player.name }}</td>
+              </tr>
+            </ng-template>
+          </p-table>
+        </div>
+      </p-card>
+    </div>
+  </div>
+</div>

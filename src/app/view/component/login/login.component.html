@@ -1,0 +1,23 @@
+<div class="flex justify-content-center align-items-center h-full">
+  <p-card class="col-8">
+    <div class="grid h-full">
+      <div class="col-5">
+        <img src="././assets/imgs/封面1.jpg" style="width: 100%;">
+      </div>
+      <div class="col-7 gap-3 flex flex-column justify-content-center align-items-center">
+        <span class="text-2xl font-bold">登入</span>
+        <span class="text-xl font-bold">羽球選手姿勢平衡辨識系統</span>
+        <div class="flex flex-column gap-2 mt-3">
+          <label>帳號</label>
+          <input pInputText/>
+        </div>
+        <div class="flex flex-column gap-2">
+          <label>密碼</label>
+          <p-password [feedback]="false"></p-password>
+        </div>
+        <p-button label="登入" routerLink="/home" [rounded]="true" [outlined]="true" severity="secondary"></p-button>
+      </div>
+    </div>
+  </p-card>
+</div>
+

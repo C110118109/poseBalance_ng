@@ -1,0 +1,58 @@
+<div class="flex justify-content-center p-4 h-full">
+  <div class="grid col-10 h-full">
+    <div class="col-5 divider h-full">
+      <p-table [value]="videos" [scrollable]="true" [scrollHeight]="scrollHeight">
+        <ng-template pTemplate="caption">
+          <span class="text-2xl font-bold">辨識中影片</span>
+        </ng-template>
+        <ng-template pTemplate="header">
+          <tr>
+            <th>影片名稱</th>
+            <th>上傳時間</th>
+          </tr>
+        </ng-template>
+        <ng-template pTemplate="body" let-video>
+          <tr>
+            <td>{{ video.name }}</td>
+            <td>{{ video.created_at }}</td>
+          </tr>
+        </ng-template>
+      </p-table>
+    </div>
+    <div class="col-7 px-4 h-full" [formGroup]="video_form">
+      <p-card styleClass="p-4 h-full" class="w-full">
+        <div class="video_card">
+          <div>
+            <div class="flex flex-row align-items-center gap-2">
+              <span class="text-4xl font-bold">上傳影片</span>
+              <span class="text-base">(請確認影片中球員無換場)</span>
+            </div>
+            <div class="flex flex-column mt-4 ml-4 gap-2">
+              <span class="text-xl">影片名稱</span>
+              <input class="flex-auto" pInputText formControlName="name"/>
+            </div>
+            <div class="flex flex-column mt-4 ml-4 gap-2">
+              <span class="text-xl">對場選手名稱</span>
+              <input class="flex-auto" pInputText formControlName="opponent"/>
+            </div>
+            <div class="flex flex-column mt-4 ml-4 gap-2">
+              <span class="text-xl">本場選手名稱</span>
+              <input class="flex-auto" pInputText formControlName="us"/>
+            </div>
+          </div>
+          <div class="flex flex-row ml-4 align-items-center gap-2">
+            <div class="justify-content-start">
+              <p-fileUpload mode="basic" chooseLabel="上傳影片" [maxFileSize]=1000000
+                            (uploadHandler)="onUpload($event)" [customUpload]="true"
+                            styleClass="w-full bg-white p-button-secondary p-button-outlined">
+              </p-fileUpload>
+            </div>
+            <div class="ml-auto">
+              <p-button label="確認" styleClass="bg-white" [outlined]="true" severity="secondary"></p-button>
+            </div>
+          </div>
+        </div>
+      </p-card>
+    </div>
+  </div>
+</div>

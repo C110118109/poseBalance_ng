@@ -1,0 +1,49 @@
+<div class="p-2 h-full">
+  <div class="flex justify-content-center h-full">
+    <div class="col-8 flex flex-column gap-2">
+      <div class="flex justify-content-end mt-2">
+      <span class="p-input-icon-right">
+      <i class="pi pi-search"></i>
+      <input type="text" pInputText [(ngModel)]="search"/>
+    </span>
+      </div>
+      <p-table [value]="videos" [scrollable]="true" [scrollHeight]="scrollHeight">
+        <ng-template pTemplate="header">
+          <tr>
+            <th pSortableColumn="name">影片名稱
+              <p-sortIcon field="name"></p-sortIcon>
+            </th>
+            <th></th>
+            <th pSortableColumn="created_at">上傳日期
+              <p-sortIcon field="created_at"></p-sortIcon>
+            </th>
+            <th></th>
+            <th></th>
+          </tr>
+        </ng-template>
+        <ng-template pTemplate="body" let-history>
+          <tr>
+            <td style="width:50%">{{ history.name }}</td>
+            <td style="width:10%">
+              @if (history.status === '辨識中') {
+                <p-tag value="辨識中"
+                       styleClass="bg-white border-1 border-round border-yellow-500 text-yellow-500"></p-tag>
+              }
+            </td>
+            <td style="width:30%">{{ history.created_at }}</td>
+            <td style="width:5%">
+              @if (history.status === '成功') {
+                <p-button icon="pi pi-eye" pTooltip="查看" [rounded]="true" [text]="true"
+                          severity="secondary "></p-button>
+              }
+            </td>
+            <td style="width:5%">
+              <p-button icon="pi pi-trash" pTooltip="刪除" [rounded]="true" [text]="true"
+                        severity="secondary "></p-button>
+            </td>
+          </tr>
+        </ng-template>
+      </p-table>
+    </div>
+  </div>
+</div>

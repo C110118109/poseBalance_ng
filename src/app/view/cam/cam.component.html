@@ -1,0 +1,42 @@
+<div class="p-2 h-full">
+  <div class="select_video">
+    <p-button label="開啟攝影機" styleClass="bg-black" (click)="openCamera()"></p-button>
+    <p-button label="關閉攝影機" styleClass="bg-black ml-2" (click)="closeCamera()"></p-button>
+  </div>
+  <div class="grid mt-2 display">
+    <div class="col-12 md:col-8 lg:col-9 h-full">
+
+      <p-card class="video-container">
+        <video #videoElement autoplay></video>
+      </p-card>
+
+    </div>
+    <div class="col-12 md:col-4 lg:col-3 h-full">
+      <p-card styleClass="h-full" class="info-card">
+        <div class="h-half">
+          <span class="text-xl font-bold">A 選手</span>
+          <p-table [value]="A_player">
+            <ng-template pTemplate="body" let-player>
+              <tr>
+                <td class="p-link text-blue-400">{{ player.time }}</td>
+                <td class="flex justify-content-end">{{ player.name }}</td>
+              </tr>
+            </ng-template>
+          </p-table>
+        </div>
+        <div class="divider"></div>
+        <div class="h-half">
+          <span class="text-xl font-bold">B 選手</span>
+          <p-table [value]="B_player">
+            <ng-template pTemplate="body" let-player>
+              <tr>
+                <td class="p-link text-blue-400">{{ player.time }}</td>
+                <td class="flex justify-content-end">{{ player.name }}</td>
+              </tr>
+            </ng-template>
+          </p-table>
+        </div>
+      </p-card>
+    </div>
+  </div>
+</div>
