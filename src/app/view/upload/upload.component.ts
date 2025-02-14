@@ -30,9 +30,9 @@ export class UploadComponent {
   scrollHeight = (window.innerHeight - 68 - 65.4 - 54.4).toString() + "px";
   videos: any[] = Array.from({length: 20}, (_, i) => {
     return {
-      name: `羽球影片${i + 1}`,
+      name: `運動員影片${i + 1}`,
       status: "辨識中",
-      created_at: `2024.1.${i + 1}`
+      created_at: `2025.1.${i + 1}`
     };
   });
 
