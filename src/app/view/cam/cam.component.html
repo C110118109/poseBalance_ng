@@ -14,8 +14,8 @@
     <div class="col-12 md:col-4 lg:col-3 h-full">
       <p-card styleClass="h-full" class="info-card">
         <div class="h-half">
-          <span class="text-xl font-bold">A 選手</span>
-          <p-table [value]="A_player">
+          <span class="text-xl font-bold">平衡判斷</span>
+          <p-table [value]="balance">
             <ng-template pTemplate="body" let-player>
               <tr>
                 <td class="p-link text-blue-400">{{ player.time }}</td>
@@ -26,8 +26,8 @@
         </div>
         <div class="divider"></div>
         <div class="h-half">
-          <span class="text-xl font-bold">B 選手</span>
-          <p-table [value]="B_player">
+          <span class="text-xl font-bold">動作姿勢</span>
+          <p-table [value]="pose">
             <ng-template pTemplate="body" let-player>
               <tr>
                 <td class="p-link text-blue-400">{{ player.time }}</td>

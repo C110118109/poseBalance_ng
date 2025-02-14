@@ -17,24 +17,24 @@ export class CamComponent implements OnDestroy {
   @ViewChild('videoElement') videoElement!: ElementRef<HTMLVideoElement>;
   private stream: MediaStream | null = null;
 
-  // A_player
-  A_player: any[] = [
-    { time: "00:10", name: "挑球" },
-    { time: "00:33", name: "下旋球" },
-    { time: "00:54", name: "平球" },
-    { time: "01:25", name: "正手擊球" },
-    { time: "01:38", name: "平球" },
-    { time: "01:45", name: "正手擊球" },
-    { time: "01:55", name: "下旋球" }
+  // balance
+  balance: any[] = [
+    { time: "00:05", name: "平衡" },
+    { time: "00:07", name: "重心偏左" },
+    { time: "00:34", name: "不平衡" },
+    { time: "01:05", name: "重心偏右" },
+    { time: "01:18", name: "重心偏右" },
+    { time: "01:45", name: "不平衡" },
+    { time: "01:55", name: "平衡" }
   ];
 
-  // B_player
-  B_player: any[] = [
-    { time: "00:06", name: "挑球" },
-    { time: "00:25", name: "下旋球" },
-    { time: "01:20", name: "平球" },
-    { time: "01:55", name: "挑球" },
-    { time: "02:05", name: "下旋球" }
+  // pose
+  pose: any[] = [
+    { time: "00:06", name: "預備動作" },
+    { time: "00:08", name: "反拍挑球" },
+    { time: "00:37", name: "反手挑球" },
+    { time: "01:02", name: "攻擊" },
+    { time: "01:23", name: "正手挑球" }
   ];
 
   openCamera() {
