@@ -32,7 +32,7 @@ export class UploadComponent {
     return {
       name: `運動員影片${i + 1}`,
       status: "辨識中",
-      created_at: `2025.1.${i + 1}`
+      created_at: `2025.2.${i + 3}`
     };
   });
 

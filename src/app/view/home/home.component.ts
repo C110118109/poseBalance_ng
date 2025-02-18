@@ -19,9 +19,9 @@ export class HomeComponent {
   // 創建有關羽球影片的data，欄位包刮 name 、 status("成功"、"辨識中") 、 created_at(格式 "2024.01.25")，幫我創建20筆資料
   videos: any[] = Array.from({length: 20}, (_, i) => {
     return {
-      name: `羽球影片${i + 1}`,
+      name: `運動員羽球影片${i + 1}`,
       status: i % 2 === 0 ? "成功" : "辨識中",
-      created_at: `2024.1.${i + 1}`
+      created_at: `2025.1.${i + 5}`
     };
   });
 }
