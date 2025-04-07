@@ -1,34 +1,77 @@
 <div class="p-2 h-full">
+  <p-toast></p-toast>
+
   <div class="select_video flex gap-2">
     <!-- 選擇影片 -->
-    <p-dropdown styleClass="w-full" appendTo="body" [(ngModel)]="selecting_video" [options]="videos"
-                optionLabel="name" optionValue="code" placeholder="選擇影片"></p-dropdown>
+    <p-dropdown styleClass="w-full"
+                appendTo="body"
+                [(ngModel)]="selecting_video"
+                [options]="videos"
+                optionLabel="name"
+                optionValue="code"
+                placeholder="選擇影片"
+                [disabled]="loading"></p-dropdown>
 
     <!-- 選擇辨識類型 -->
-    <p-dropdown styleClass="w-full" appendTo="body" [(ngModel)]="selectedRecognition" [options]="recognitionTypes"
-                optionLabel="name" optionValue="code" placeholder="選擇辨識類型"></p-dropdown>
+    <p-dropdown styleClass="w-full"
+                appendTo="body"
+                [(ngModel)]="selectedRecognition"
+                [options]="recognitionTypes"
+                optionLabel="name"
+                optionValue="code"
+                placeholder="選擇辨識類型"
+                [disabled]="loading"></p-dropdown>
 
-    <p-button label="確認" styleClass="bg-white" [outlined]="true" severity="secondary"></p-button>
+    <p-button label="確認"
+              styleClass="bg-white"
+              [outlined]="true"
+              severity="secondary"
+              [disabled]="loading || !selecting_video"
+              (onClick)="onConfirm()"></p-button>
   </div>
 
   <div class="grid mt-2 display">
     <div class="col-12 md:col-8 lg:col-9 h-full">
-      <p-card class="video" styleClass="h-full">
-        <iframe src="https://www.youtube.com/embed/tk9guzivxiU?si=qQfhuRptSoA0b48B"
-                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-                allowfullscreen></iframe>
+      <p-card styleClass="h-full video-container">
+        <div *ngIf="loading" class="flex justify-content-center align-items-center h-full">
+          <p-progressSpinner strokeWidth="4"></p-progressSpinner>
+        </div>
+
+        <div *ngIf="!loading && !videoSrc" class="flex justify-content-center align-items-center h-full">
+          <p>請選擇一個影片進行查看</p>
+        </div>
+
+        <div *ngIf="!loading && videoSrc" class="video-wrapper">
+          <video #videoPlayer controls class="w-full h-full">
+            <source [src]="videoSrc" type="video/mp4">
+            您的瀏覽器不支持影片標籤。
+          </video>
+          <div class="video-info">
+            <span *ngIf="currentVideo?.name" class="video-title">{{ currentVideo.name }}</span>
+            <span *ngIf="currentVideo?.created_at" class="video-date">上傳日期: {{ currentVideo.created_at }}</span>
+          </div>
+        </div>
       </p-card>
     </div>
 
     <div class="col-12 md:col-4 lg:col-3 h-full">
       <p-card styleClass="h-full" class="info-card">
         <div class="h-half">
-          <span class="text-xl font-bold">A 選手</span>
+          <span class="text-xl font-bold">{{ currentVideo?.us || 'A 選手' }}</span>
           <p-table *ngIf="selectedRecognition === 'posture'" [value]="A_player">
             <ng-template pTemplate="body" let-player>
               <tr>
-                <td class="p-link text-blue-400">{{ player.time }}</td>
+                <td class="p-link text-blue-400"
+                    (click)="seekToTime(player.time)"
+                    style="cursor: pointer;">
+                  {{ player.time }}
+                </td>
                 <td class="flex justify-content-end">{{ player.name }}</td>
+              </tr>
+            </ng-template>
+            <ng-template pTemplate="emptymessage">
+              <tr>
+                <td colspan="2" class="text-center">無數據</td>
               </tr>
             </ng-template>
           </p-table>
@@ -36,8 +79,17 @@
           <p-table *ngIf="selectedRecognition === 'balance'" [value]="A_player_balance">
             <ng-template pTemplate="body" let-player>
               <tr>
-                <td class="p-link text-blue-400">{{ player.time }}</td>
+                <td class="p-link text-blue-400"
+                    (click)="seekToTime(player.time)"
+                    style="cursor: pointer;">
+                  {{ player.time }}
+                </td>
                 <td class="flex justify-content-end">{{ player.state }}</td>
+              </tr>
+            </ng-template>
+            <ng-template pTemplate="emptymessage">
+              <tr>
+                <td colspan="2" class="text-center">無數據</td>
               </tr>
             </ng-template>
           </p-table>
@@ -46,12 +98,21 @@
         <div class="divider"></div>
 
         <div class="h-half">
-          <span class="text-xl font-bold">B 選手</span>
+          <span class="text-xl font-bold">{{ currentVideo?.opponent || 'B 選手' }}</span>
           <p-table *ngIf="selectedRecognition === 'posture'" [value]="B_player">
             <ng-template pTemplate="body" let-player>
               <tr>
-                <td class="p-link text-blue-400">{{ player.time }}</td>
+                <td class="p-link text-blue-400"
+                    (click)="seekToTime(player.time)"
+                    style="cursor: pointer;">
+                  {{ player.time }}
+                </td>
                 <td class="flex justify-content-end">{{ player.name }}</td>
+              </tr>
+            </ng-template>
+            <ng-template pTemplate="emptymessage">
+              <tr>
+                <td colspan="2" class="text-center">無數據</td>
               </tr>
             </ng-template>
           </p-table>
@@ -59,8 +120,17 @@
           <p-table *ngIf="selectedRecognition === 'balance'" [value]="B_player_balance">
             <ng-template pTemplate="body" let-player>
               <tr>
-                <td class="p-link text-blue-400">{{ player.time }}</td>
+                <td class="p-link text-blue-400"
+                    (click)="seekToTime(player.time)"
+                    style="cursor: pointer;">
+                  {{ player.time }}
+                </td>
                 <td class="flex justify-content-end">{{ player.state }}</td>
+              </tr>
+            </ng-template>
+            <ng-template pTemplate="emptymessage">
+              <tr>
+                <td colspan="2" class="text-center">無數據</td>
               </tr>
             </ng-template>
           </p-table>
