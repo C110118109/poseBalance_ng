@@ -37,15 +37,32 @@
           <p-progressSpinner strokeWidth="4"></p-progressSpinner>
         </div>
 
-        <div *ngIf="!loading && !videoSrc" class="flex justify-content-center align-items-center h-full">
+        <div *ngIf="!loading && !videoUrl" class="flex justify-content-center align-items-center h-full">
           <p>請選擇一個影片進行查看</p>
         </div>
 
-        <div *ngIf="!loading && videoSrc" class="video-wrapper">
+        <!-- Debug info for developers -->
+        <div *ngIf="!loading && videoUrl" class="debug-info">
+          <small>Video URL: {{ videoUrl }}</small>
+        </div>
+
+        <!-- Enhanced HTML5 Video Player -->
+        <div *ngIf="!loading && videoUrl" class="video-wrapper">
           <video #videoPlayer controls class="w-full h-full">
-            <source [src]="videoSrc" type="video/mp4">
+            <source [src]="videoUrl" type="video/mp4">
+            <source [src]="videoUrl" type="video/webm">
+            <source [src]="videoUrl" type="video/ogg">
             您的瀏覽器不支持影片標籤。
           </video>
+          <div class="video-info">
+            <span *ngIf="currentVideo?.name" class="video-title">{{ currentVideo.name }}</span>
+            <span *ngIf="currentVideo?.created_at" class="video-date">上傳日期: {{ currentVideo.created_at }}</span>
+          </div>
+        </div>
+
+        <!-- Fallback iframe player for browsers that might not support the video format -->
+        <div *ngIf="!loading && videoUrl && videoPlayer && videoPlayer.nativeElement && videoPlayer.nativeElement.error" class="video-iframe-wrapper">
+          <iframe [src]="videoSrc" allowfullscreen class="w-full h-full"></iframe>
           <div class="video-info">
             <span *ngIf="currentVideo?.name" class="video-title">{{ currentVideo.name }}</span>
             <span *ngIf="currentVideo?.created_at" class="video-date">上傳日期: {{ currentVideo.created_at }}</span>

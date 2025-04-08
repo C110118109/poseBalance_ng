@@ -17,7 +17,7 @@ import { DomSanitizer, SafeResourceUrl } from '@angular/platform-browser';
     FormsModule,
     HttpClientModule
   ],
-  providers: [MessageService, VideoService], // Add VideoService to the providers array
+  providers: [MessageService],
   templateUrl: './image-recognition.component.html',
   styleUrl: './image-recognition.component.scss'
 })
@@ -28,7 +28,8 @@ export class ImageRecognitionComponent implements OnInit {
   // 選擇的影片
   selecting_video: string | null = null;
   currentVideo: any = null;
-  videoSrc: SafeResourceUrl | null = null;
+  videoUrl: string | null = null;
+  videoSrc: SafeResourceUrl | null = null; // Sanitized URL for iframes if needed
   loading = true;
 
   // 選擇的辨識類型 (姿勢 or 平衡)
@@ -71,6 +72,8 @@ export class ImageRecognitionComponent implements OnInit {
       if (params['videoId']) {
         this.selecting_video = params['videoId'];
         this.loadVideoDetails(params['videoId']);
+      } else {
+        this.loading = false; // Set loading to false if there's no videoId
       }
     });
   }
@@ -106,9 +109,26 @@ export class ImageRecognitionComponent implements OnInit {
       next: (data) => {
         this.currentVideo = data;
 
-        // Set video source
-        const videoUrl = this.videoService.getProcessedVideoUrl(videoId);
-        this.videoSrc = this.sanitizer.bypassSecurityTrustResourceUrl(videoUrl);
+        console.log('Video details:', data);
+
+        // OPTION 1: Try the web_compatible_url first if available
+        if (data.web_compatible_url) {
+          this.videoUrl = this.ensureAbsoluteUrl(data.web_compatible_url);
+          console.log('Using web compatible URL:', this.videoUrl);
+        }
+        // OPTION 2: Use processed_url as the second choice
+        else if (data.processed_url) {
+          this.videoUrl = this.ensureAbsoluteUrl(data.processed_url);
+          console.log('Using processed URL:', this.videoUrl);
+        }
+        // OPTION 3: Use the streaming endpoint as the last resort
+        else {
+          this.videoUrl = this.videoService.getWebCompatibleVideoUrl(videoId);
+          console.log('Using streaming endpoint:', this.videoUrl);
+        }
+
+        // Create a sanitized URL for iframe fallback if needed
+        this.videoSrc = this.sanitizer.bypassSecurityTrustResourceUrl(this.videoUrl);
 
         // Load analysis data
         if (data.pose_data) {
@@ -122,6 +142,11 @@ export class ImageRecognitionComponent implements OnInit {
         }
 
         this.loading = false;
+
+        // Set timeout to init video player after DOM is updated
+        setTimeout(() => {
+          this.initVideoPlayer();
+        }, 100);
       },
       error: (error) => {
         console.error('Error loading video details', error);
@@ -135,9 +160,70 @@ export class ImageRecognitionComponent implements OnInit {
     });
   }
 
+  // Helper function to ensure URL is absolute
+  private ensureAbsoluteUrl(url: string): string {
+    if (url.startsWith('http')) {
+      return url;
+    }
+
+    // Get base URL of the current application
+    const baseUrl = window.location.origin;
+
+    // If URL starts with a slash, append it to the base URL
+    if (url.startsWith('/')) {
+      return `${baseUrl}${url}`;
+    }
+
+    // Otherwise, add a slash between base URL and the path
+    return `${baseUrl}/${url}`;
+  }
+
+  initVideoPlayer() {
+    if (this.videoPlayer && this.videoPlayer.nativeElement) {
+      const videoElement = this.videoPlayer.nativeElement;
+
+      // Add event listeners to check if video is loaded
+      videoElement.addEventListener('loadeddata', () => {
+        console.log('Video data loaded successfully');
+      });
+
+      videoElement.addEventListener('error', (e) => {
+        console.error('Video loading error:', e);
+
+        // Try fallback to original video URL if processed version fails
+        if (this.currentVideo && this.currentVideo.file_url) {
+          console.log('Trying fallback to original video');
+          this.videoUrl = this.ensureAbsoluteUrl(this.currentVideo.file_url);
+
+          // Need to update the video source element
+          const sourceElement = videoElement.querySelector('source');
+          if (sourceElement) {
+            sourceElement.src = this.videoUrl;
+            videoElement.load(); // Reload the video with new source
+          }
+        } else {
+          this.messageService.add({
+            severity: 'error',
+            summary: '錯誤',
+            detail: '視頻加載失敗，請檢查視頻格式或重試'
+          });
+        }
+      });
+    } else {
+      console.warn('Video player element not found');
+    }
+  }
+
   onConfirm() {
     if (this.selecting_video) {
       this.loadVideoDetails(this.selecting_video);
+
+      // Update the URL with the selected video ID for better user experience
+      this.router.navigate([], {
+        relativeTo: this.route,
+        queryParams: { videoId: this.selecting_video },
+        queryParamsHandling: 'merge'
+      });
     } else {
       this.messageService.add({
         severity: 'warn',
@@ -150,13 +236,28 @@ export class ImageRecognitionComponent implements OnInit {
   // Function to seek video to specific timestamp
   seekToTime(timeString: string) {
     if (this.videoPlayer && this.videoPlayer.nativeElement) {
-      const timeParts = timeString.split(':');
-      const minutes = parseInt(timeParts[0], 10);
-      const seconds = parseInt(timeParts[1], 10);
-      const totalSeconds = minutes * 60 + seconds;
+      try {
+        const timeParts = timeString.split(':');
+        const minutes = parseInt(timeParts[0], 10);
+        const seconds = parseInt(timeParts[1], 10);
+        const totalSeconds = minutes * 60 + seconds;
 
-      this.videoPlayer.nativeElement.currentTime = totalSeconds;
-      this.videoPlayer.nativeElement.play();
+        console.log(`Seeking to ${totalSeconds} seconds (${timeString})`);
+
+        this.videoPlayer.nativeElement.currentTime = totalSeconds;
+        this.videoPlayer.nativeElement.play().catch(err => {
+          console.error('Error playing video:', err);
+          this.messageService.add({
+            severity: 'error',
+            summary: '錯誤',
+            detail: '無法播放視頻，可能是瀏覽器限制'
+          });
+        });
+      } catch (error) {
+        console.error('Error seeking to time:', error);
+      }
+    } else {
+      console.warn('Video player not initialized');
     }
   }
 }
